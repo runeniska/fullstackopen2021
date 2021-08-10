@@ -1,0 +1,16 @@
+# https://www.websequencediagrams.com/
+
+title SPA uusi muistiinpano
+
+selain->selain: Selain lisää kommentin DOMiin
+
+note left of selain:
+Selain lähettää lomakkeen
+end note
+
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note right of palvelin:
+Palvelin vastaa onnistuneesti
+end note
+palvelin-->selain: HTTP 201 {"message":"note created"}

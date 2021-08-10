@@ -1,0 +1,36 @@
+# https://www.websequencediagrams.com/
+
+title SPA sivuston avaaminen
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+
+palvelin-->selain: HTML-koodi (dokumentti)
+
+note left of selain:
+Selain pyytää HTML-koodissa
+määritellyt resurssit
+erillisinä pyyntöinä
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+
+palvelin-->selain: CSS-koodi (muotoilu)
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+
+palvelin-->selain: JavaScript-koodi (logiikka)
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+
+palvelin-->selain: JSON (data)
+
+note left of selain:
+Selain pyytää osoitekentän kuvaketta
+mutta saa palvelimelta uuden HTML-
+dokumentin, joka sisältää linkin
+kurssin tilastoihin
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/favicon.ico
+
+palvelin-->selain: HTML-koodi (uusi dokumentti)
