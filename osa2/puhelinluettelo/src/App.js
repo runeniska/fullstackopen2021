@@ -1,5 +1,45 @@
 import React, { useState } from 'react'
 
+const Filter = ({ search, searchNames }) => {
+  return (
+    <div>
+      Filter shown with <input value={search} onChange={searchNames}/>
+    </div>
+  )
+}
+
+const PersonForm = (props) => {
+  return (
+    <div>
+      <form onSubmit={props.addPerson}>
+          <div>
+            name: <input value={props.newName} onChange={props.handleNameChange} />
+          </div>
+          <div>
+            number: <input value={props.newNumber} onChange={props.handleNumberChange}/>
+          </div>
+          <div>
+            <button type="submit">add</button>
+          </div>
+        </form>
+    </div>
+  )
+}
+
+const Persons = ({ results }) => {
+  return (
+    <div>
+      <ul>
+        {results.map( person =>
+          <li key={person.name}>
+            {person.name} {person.number}
+          </li>
+        )}
+      </ul>
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456' },
@@ -31,7 +71,10 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      setPersons(persons.concat(personObject))
+      const newPersons = persons.concat(personObject)
+      setPersons(newPersons)
+      setResults(newPersons)
+      setSearch('')
       setNewName('')
       setNewNumber('')
     }
@@ -48,24 +91,17 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      Filter shown with <input value={search} onChange={searchNames}/>
+      <Filter search={search} searchNames={searchNames} />
       <h2>Add new contact</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        addPerson={addPerson}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <ul>
-        {results.map( person =>
-          <li key={person.name}>{person.name} {person.number}</li> )}
-      </ul>
+      <Persons results={results} />
     </div>
   )
 
