@@ -46,7 +46,14 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ search, setSearch ] = useState('')
-  const [ results, setResults ] = useState(persons)
+
+  const results = persons.filter( person =>
+    person.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+  )
+
+  const handleNameChange = (event) => setNewName(event.target.value)
+  const handleNumberChange = (event) => setNewNumber(event.target.value)
+  const handleSearchChange = (event) => setSearch(event.target.value)
 
   useEffect(() => {
     console.log('effect')
@@ -55,12 +62,8 @@ const App = () => {
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
-        setResults(response.data)
       })
   }, [])
-
-  const handleNameChange = (event) => setNewName(event.target.value)
-  const handleNumberChange = (event) => setNewNumber(event.target.value)
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -79,25 +82,15 @@ const App = () => {
       }
       const newPersons = persons.concat(personObject)
       setPersons(newPersons)
-      setResults(newPersons)
-      setSearch('')
       setNewName('')
       setNewNumber('')
     }
   }
 
-  const searchNames = (event) => {
-    const query = event.target.value
-    setSearch(query)
-    setResults(persons.filter( person =>
-      person.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-    ))
-  }
-
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter search={search} searchNames={searchNames} />
+      <Filter search={search} searchNames={handleSearchChange} />
       <h2>Add new contact</h2>
       <PersonForm
         addPerson={addPerson}
@@ -110,7 +103,6 @@ const App = () => {
       <Persons results={results} />
     </div>
   )
-
 }
 
 export default App
