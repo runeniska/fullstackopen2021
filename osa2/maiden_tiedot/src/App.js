@@ -10,36 +10,47 @@ const Filter = ({ search, searchCountries }) => {
   )
 }
 
+const ShowOverTen = () => {
+  return (
+    <div>
+      Too many matches, specify another filter
+    </div>
+  )
+}
+
+const ShowOverOne = ({ countries }) => {
+  return (
+    <div>
+      <ul>
+        {countries.map( country => <li key={country.name}>{country.name}</li> )}
+      </ul>
+    </div>
+  )
+}
+
+const ShowOne = ({ country }) => {
+  return (
+    <div>
+      <h1>{country.name}</h1>
+      <p>capital {country.capital}</p>
+      <p>population {country.population}</p>
+      <h2>Languages</h2>
+      <ul>
+        {country.languages.map( language => <li key={language.name}>{language.name}</li>)}
+      </ul>
+      <img className="App-img" src={country.flag} alt="Flag"/>
+    </div>
+  )
+}
+
 const Countries = ({ countries }) => {
   const size = countries.length
   if (size > 10) {
-    return (
-      <div>
-        Too many matches, specify another filter
-      </div>
-    )
+    return <ShowOverTen />
   } else if (size > 1) {
-    return (
-      <div>
-        <ul>
-          {countries.map( country => <li key={country.name}>{country.name}</li> )}
-        </ul>
-      </div>
-    )
+    return <ShowOverOne countries={countries} />
   } else if (size === 1) {
-    const country = countries[0]
-    return (
-      <div>
-        <h1>{country.name}</h1>
-        <p>capital {country.capital}</p>
-        <p>population {country.population}</p>
-        <h2>Languages</h2>
-        <ul>
-          {country.languages.map( language => <li key={language.name}>{language.name}</li>)}
-        </ul>
-        <img className="App-img" src={country.flag} alt="Flag"/>
-      </div>
-    )
+    return <ShowOne country={countries[0]} />
   } else {
     return (
       <div>
