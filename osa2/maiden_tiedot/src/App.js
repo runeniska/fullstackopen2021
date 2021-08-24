@@ -1,25 +1,79 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import './App.css'
 
-function App() {
+const Filter = ({ search, searchCountries }) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      Find countries: <input value={search} onChange={searchCountries}/>
     </div>
-  );
+  )
 }
 
-export default App;
+const Countries = ({ countries }) => {
+  const size = countries.length
+  if (size > 10) {
+    return (
+      <div>
+        Too many matches, specify another filter
+      </div>
+    )
+  } else if (size > 1) {
+    return (
+      <div>
+        <ul>
+          {countries.map( country => <li key={country.name}>{country.name}</li> )}
+        </ul>
+      </div>
+    )
+  } else if (size === 1) {
+    const country = countries[0]
+    return (
+      <div>
+        <h1>{country.name}</h1>
+        <p>capital {country.capital}</p>
+        <p>population {country.population}</p>
+        <h2>Languages</h2>
+        <ul>
+          {country.languages.map( language => <li key={language.name}>{language.name}</li>)}
+        </ul>
+        <img className="App-img" src={country.flag} alt="Flag"/>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        No countries found
+      </div>
+    )
+  }
+}
+
+const App = () => {
+  const [ countries, setCountries ] = useState([])
+  const [ search, setSearch ] = useState('')
+
+  const results = countries.filter( country =>
+    country.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+  )
+
+  const handleSearchChange = (event) => setSearch(event.target.value)
+
+  useEffect(() => {
+    axios
+      .get('https://restcountries.eu/rest/v2/all')
+      .then(response => {
+        console.log(response.data.length)
+        setCountries(response.data)
+      })
+  }, [])
+
+  return (
+    <div>
+      <Filter search={search} searchCountries={handleSearchChange} />
+      <Countries countries={results} />
+    </div>
+  )
+}
+
+export default App
