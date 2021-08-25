@@ -10,6 +10,33 @@ const Filter = ({ search, searchCountries }) => {
   )
 }
 
+const Weather = ({ country }) => {
+  const [ weather, setWeather] = useState([])
+  const key = process.env.REACT_APP_API_KEY
+
+  useEffect(() => {
+    axios
+      .get(`http://api.weatherstack.com/current?access_key=${key}&query=${country.capital}`)
+      .then(response => {
+        console.log(response.data)
+        setWeather(response.data)
+      })
+  }, [country.capital, key])
+
+  if (weather.length !== 0) {
+    return (
+    <div>
+      <h2>Weather in {weather.location.name}</h2>
+      <p>Temperature: {weather.current.temperature}</p>
+      <img className="App-img" src={weather.current.weather_icons[0]} alt="Weather icon"/>
+      <p>Wind: {weather.current.wind_speed} mph direction {weather.current.wind_dir}</p>
+    </div>
+    )
+  } else {
+    return <></>
+  }
+}
+
 const ShowOverTen = () => {
   return (
     <div>
@@ -43,6 +70,7 @@ const ShowOne = ({ country }) => {
         {country.languages.map( language => <li key={language.name}>{language.name}</li>)}
       </ul>
       <img className="App-img" src={country.flag} alt="Flag"/>
+      <Weather country={country} />
     </div>
   )
 }
@@ -78,7 +106,6 @@ const App = () => {
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        console.log(response.data.length)
         setCountries(response.data)
       })
   }, [])
