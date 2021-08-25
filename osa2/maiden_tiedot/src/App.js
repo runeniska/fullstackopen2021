@@ -18,11 +18,15 @@ const ShowOverTen = () => {
   )
 }
 
-const ShowOverOne = ({ countries }) => {
+const ShowOverOne = ({ countries, search }) => {
   return (
     <div>
       <ul>
-        {countries.map( country => <li key={country.name}>{country.name}</li> )}
+        {countries.map( country =>
+          <li key={country.name}>
+            {country.name} <button value={country.name} onClick={search}>show</button>
+          </li>
+        )}
       </ul>
     </div>
   )
@@ -43,12 +47,12 @@ const ShowOne = ({ country }) => {
   )
 }
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, search }) => {
   const size = countries.length
   if (size > 10) {
     return <ShowOverTen />
   } else if (size > 1) {
-    return <ShowOverOne countries={countries} />
+    return <ShowOverOne countries={countries} search={search} />
   } else if (size === 1) {
     return <ShowOne country={countries[0]} />
   } else {
@@ -82,7 +86,7 @@ const App = () => {
   return (
     <div>
       <Filter search={search} searchCountries={handleSearchChange} />
-      <Countries countries={results} />
+      <Countries countries={results} search={handleSearchChange} />
     </div>
   )
 }
