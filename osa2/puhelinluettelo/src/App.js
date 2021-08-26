@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = ({ search, searchNames }) => {
   return (
@@ -42,7 +42,6 @@ const Persons = ({ results }) => {
 }
 
 const App = () => {
-  const baseUrl = 'http://localhost:3001/persons'
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
@@ -57,11 +56,10 @@ const App = () => {
   const handleSearchChange = (event) => setSearch(event.target.value)
 
   useEffect(() => {
-    axios
-      .get(baseUrl)
-      .then(response => {
-        setPersons(response.data)
-      })
+    personService
+      .getAll()
+      .then(initialPersons => setPersons(initialPersons))
+      .catch(_ => console.log('Cannot fetch contacts from server'))
   }, [])
 
   const addPerson = (event) => {
@@ -80,10 +78,10 @@ const App = () => {
         number: newNumber
       }
 
-      axios
-        .post(baseUrl, personObject)
-        .then(response => {
-          setPersons(persons.concat(response.data))
+      personService
+        .create(personObject)
+        .then(returnedPersonObject => {
+          setPersons(persons.concat(returnedPersonObject))
           setNewName('')
           setNewNumber('')
         })
