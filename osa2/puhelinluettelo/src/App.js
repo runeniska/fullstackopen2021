@@ -42,6 +42,7 @@ const Persons = ({ results }) => {
 }
 
 const App = () => {
+  const baseUrl = 'http://localhost:3001/persons'
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
@@ -56,11 +57,9 @@ const App = () => {
   const handleSearchChange = (event) => setSearch(event.target.value)
 
   useEffect(() => {
-    console.log('effect')
     axios
-      .get('http://localhost:3001/persons')
+      .get(baseUrl)
       .then(response => {
-        console.log('promise fulfilled')
         setPersons(response.data)
       })
   }, [])
@@ -80,10 +79,15 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      const newPersons = persons.concat(personObject)
-      setPersons(newPersons)
-      setNewName('')
-      setNewNumber('')
+
+      axios
+        .post(baseUrl, personObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(_ => console.log('Failed to add person'))
     }
   }
 
