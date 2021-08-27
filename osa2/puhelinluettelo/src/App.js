@@ -66,11 +66,19 @@ const Notification = ({ message }) => {
     return null
   }
 
-  return (
-    <div className="success">
-      {message}
-    </div>
-  )
+  if (message.includes('success')) {
+    return (
+      <div className="success">
+        {message}
+      </div>
+    )
+  } else {
+    return (
+      <div className="error">
+        {message}
+      </div>
+    )
+  }
 }
 
 const App = () => {
@@ -116,7 +124,12 @@ const App = () => {
             setMessage(`Contact '${existingPerson.name}' was updated successfully`)
             setTimeout(() => setMessage(null), 5000)
           })
-          .catch(error => console.log(error))
+          .catch(error => {
+            console.log(error)
+            setMessage(`Information of '${existingPerson.name}' has already been removed from server`)
+            setTimeout(() => setMessage(null), 5000)
+            setPersons(persons.filter(person => person.id !== existingPerson.id))
+          })
       }
     } else if (numberExists) {
       window.alert(`${newNumber} is already added to phonebook`)
