@@ -27,13 +27,30 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({ results }) => {
+const Persons = ({ persons, setPersons, search }) => {
+  const results = persons.filter( person =>
+    person.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+  )
+
+  const deletePerson = (person) => {
+    const proceed = window.confirm(`Delete ${person.name}?`)
+
+    if (proceed) {
+      personService
+        .del(person.id)
+        .then(_ => console.log(`${person.name} removed successfully`))
+        .catch(_ => console.log(`${person.name} is removed already`))
+
+      setPersons(persons.filter(p => p.id !== person.id))
+    }
+  }
+
   return (
     <div>
       <ul>
         {results.map( person =>
           <li key={person.name}>
-            {person.name} {person.number}
+            {person.name} {person.number} <button onClick={() => deletePerson(person)}>delete</button>
           </li>
         )}
       </ul>
@@ -46,10 +63,6 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ search, setSearch ] = useState('')
-
-  const results = persons.filter( person =>
-    person.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-  )
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
@@ -102,7 +115,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons results={results} />
+      <Persons persons={persons} setPersons={setPersons} search={search} />
     </div>
   )
 }
