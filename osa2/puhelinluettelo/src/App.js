@@ -27,7 +27,7 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({ persons, setPersons, search }) => {
+const Persons = ({ persons, setPersons, search, setMessage }) => {
   const results = persons.filter( person =>
     person.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
   )
@@ -38,7 +38,10 @@ const Persons = ({ persons, setPersons, search }) => {
     if (proceed) {
       personService
         .del(person.id)
-        .then(_ => console.log(`${person.name} removed successfully`))
+        .then(_ => {
+          setMessage(`Contact '${person.name}' was removed successfully`)
+          setTimeout(() => setMessage(null), 5000)
+        })
         .catch(_ => console.log(`${person.name} is removed already`))
 
       setPersons(persons.filter(p => p.id !== person.id))
@@ -58,11 +61,24 @@ const Persons = ({ persons, setPersons, search }) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (!message) {
+    return null
+  }
+
+  return (
+    <div className="success">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ search, setSearch ] = useState('')
+  const [ message, setMessage ] = useState('')
 
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
@@ -92,11 +108,13 @@ const App = () => {
         personService
           .update(updatedPerson)
           .then(returnedPersonObject => {
+            setNewName('')
+            setNewNumber('')
             setPersons(persons.map(person => {
-              setNewName('')
-              setNewNumber('')
               return person.id !== existingPerson.id ? person : returnedPersonObject
             }))
+            setMessage(`Contact '${existingPerson.name}' was updated successfully`)
+            setTimeout(() => setMessage(null), 5000)
           })
           .catch(error => console.log(error))
       }
@@ -106,9 +124,11 @@ const App = () => {
       personService
         .create(personObject)
         .then(returnedPersonObject => {
-          setPersons(persons.concat(returnedPersonObject))
           setNewName('')
           setNewNumber('')
+          setPersons(persons.concat(returnedPersonObject))
+          setMessage(`Contact '${personObject.name}' was added successfully`)
+          setTimeout(() => setMessage(null), 5000)
         })
         .catch(_ => console.log('Failed to add person'))
     }
@@ -117,6 +137,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter search={search} searchNames={handleSearchChange} />
       <h2>Add new contact</h2>
       <PersonForm
@@ -127,7 +148,12 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} setPersons={setPersons} search={search} />
+      <Persons
+        persons={persons}
+        setPersons={setPersons}
+        search={search}
+        setMessage={setMessage}
+      />
     </div>
   )
 }
