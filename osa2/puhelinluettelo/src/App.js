@@ -79,18 +79,30 @@ const App = () => {
     event.preventDefault()
     const nameExists = persons.map( person => person.name ).includes(newName)
     const numberExists = persons.map( person => person.number ).includes(newNumber)
+    const personObject = {
+      name: newName,
+      number: newNumber
+    }
 
-    if (nameExists || numberExists) {
-      window.alert(
-        (nameExists ? newName : newNumber) +
-        ' is already added to phonebook'
-      )
-    } else {
-      const personObject = {
-        name: newName,
-        number: newNumber
+    if (nameExists) {
+      const proceed = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (proceed) {
+        const existingPerson = persons.find(p => p.name === newName)
+        const updatedPerson = {...existingPerson, number: newNumber}
+        personService
+          .update(updatedPerson)
+          .then(returnedPersonObject => {
+            setPersons(persons.map(person => {
+              setNewName('')
+              setNewNumber('')
+              return person.id !== existingPerson.id ? person : returnedPersonObject
+            }))
+          })
+          .catch(error => console.log(error))
       }
-
+    } else if (numberExists) {
+      window.alert(`${newNumber} is already added to phonebook`)
+    } else {
       personService
         .create(personObject)
         .then(returnedPersonObject => {
